@@ -1,5 +1,7 @@
 import { DocumentDefinition } from 'mongoose';
+import { omit } from 'lodash';
 import { User, UserDocument } from '../model/user.model';
+import { hashPassword } from '../utils/jwt.utils';
 
 export const createUser = async (
   input: DocumentDefinition<UserDocument>
@@ -9,9 +11,34 @@ export const createUser = async (
   }
 > => {
   try {
-    return await User.create(input);
+    const hashedPassword = await hashPassword(input.password);
+    return await User.create({
+      ...input,
+      password: hashedPassword,
+    });
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     throw new Error(error);
   }
+};
+
+export const validatePassword = async ({
+  email,
+  password,
+}: {
+  email: UserDocument['email'];
+  password: string;
+}): Promise<any> => {
+  const user = await User.findOne({ email });
+  if (!user) {
+    return false;
+  }
+
+  const isValid = await user.comparePassword(password);
+
+  if (!isValid) {
+    return false;
+  }
+
+  return omit(user.toJSON(), 'password');
 };

@@ -1,7 +1,11 @@
 import { Express, Request, Response } from 'express';
+import { createUserSessionHandler } from './controller/session.controller';
 import { createUserHanlder } from './controller/user.controller';
 import { validateRequest } from './middleware/validateRequest';
-import { createUserSchema } from './schema/user.schema';
+import {
+  createUserSchema,
+  createUserSessionSchema,
+} from './schema/user.schema';
 
 export const routes = (app: Express): void => {
   app.get('/healthcheck', (req: Request, res: Response) => res.sendStatus(200));
@@ -12,6 +16,11 @@ export const routes = (app: Express): void => {
 
   // Login User
   // POST /api/session
+  app.post(
+    '/api/sessions',
+    validateRequest(createUserSessionSchema),
+    createUserSessionHandler
+  );
 
   // Get User's Session
   // GET /api/sessions
