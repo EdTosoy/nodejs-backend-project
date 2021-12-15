@@ -1,8 +1,10 @@
-import { LeanDocument } from 'mongoose';
+import { FilterQuery, LeanDocument, UpdateQuery } from 'mongoose';
 import config from 'config';
+import { get } from 'lodash';
 import { Session, SessionDocument } from '../model/session.model';
 import { UserDocument } from '../model/user.model';
-import { sign } from '../utils/jwt.utils';
+import { decode, sign } from '../utils/jwt.utils';
+import { findUser } from './user.service';
 
 interface IcreateAcessTokenParams {
   user:
@@ -37,3 +39,33 @@ export const createAccessToken = ({
   );
   return accessToken;
 };
+
+export const reIssueAccessToken = async ({
+  refreshToken,
+}: {
+  refreshToken: string;
+}): Promise<string | false> => {
+  // Decode the refresh token
+  const { decoded } = decode(refreshToken);
+
+  if (!decoded || !get(decoded, '_id')) return false;
+
+  // Get the session
+  const session = await Session.findById(get(decoded, '_id'));
+
+  // Make sure the session is still valid
+  if (!session || !session?.valid) return false;
+
+  const user = await findUser({ _id: session.user });
+
+  if (!user) return false;
+
+  const accessToken = createAccessToken({ user, session });
+
+  return accessToken;
+};
+
+export const updateSession = async (
+  query: FilterQuery<SessionDocument>,
+  update: UpdateQuery<SessionDocument>
+): Promise<any> => Session.updateOne(query, update);

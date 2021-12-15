@@ -1,4 +1,4 @@
-import { DocumentDefinition } from 'mongoose';
+import { DocumentDefinition, FilterQuery, LeanDocument } from 'mongoose';
 import { omit } from 'lodash';
 import { User, UserDocument } from '../model/user.model';
 import { hashPassword } from '../utils/jwt.utils';
@@ -42,3 +42,11 @@ export const validatePassword = async ({
 
   return omit(user.toJSON(), 'password');
 };
+
+export const findUser = async (
+  query: FilterQuery<UserDocument>
+): Promise<LeanDocument<
+  UserDocument & {
+    _id: any;
+  }
+> | null> => User.findOne(query).lean();

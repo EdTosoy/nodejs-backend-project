@@ -1,7 +1,10 @@
 import { Express, Request, Response } from 'express';
-import { createUserSessionHandler } from './controller/session.controller';
+import {
+  createUserSessionHandler,
+  invalidateUserSessionHandler,
+} from './controller/session.controller';
 import { createUserHanlder } from './controller/user.controller';
-import { validateRequest } from './middleware/validateRequest';
+import { requiresUser, validateRequest } from './middleware';
 import {
   createUserSchema,
   createUserSessionSchema,
@@ -27,4 +30,5 @@ export const routes = (app: Express): void => {
 
   // Logout
   // DELETE /api/sessions
+  app.delete('/api/sessions', requiresUser, invalidateUserSessionHandler);
 };
