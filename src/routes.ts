@@ -2,6 +2,7 @@ import { Express, Request, Response } from 'express';
 import {
   createUserSessionHandler,
   invalidateUserSessionHandler,
+  getUserSessionsHandler,
 } from './controller/session.controller';
 import { createUserHanlder } from './controller/user.controller';
 import { requiresUser, validateRequest } from './middleware';
@@ -27,6 +28,7 @@ export const routes = (app: Express): void => {
 
   // Get User's Session
   // GET /api/sessions
+  app.get('/api/sessions', requiresUser, getUserSessionsHandler);
 
   // Logout
   // DELETE /api/sessions

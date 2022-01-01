@@ -7,6 +7,7 @@ import {
   createAccessToken,
   createSession,
   updateSession,
+  findSessions,
 } from '../service/session.service';
 
 export const createUserSessionHandler = async (
@@ -45,4 +46,12 @@ export const invalidateUserSessionHandler = async (
   await updateSession({ _id: sessionId }, { valid: false });
 
   return res.sendStatus(200);
+};
+
+export const getUserSessionsHandler = async (req: Request, res: Response) => {
+  const userId = get(req, 'user._id');
+
+  const sessions = await findSessions({ user: userId, valid: true });
+
+  return res.send(sessions);
 };

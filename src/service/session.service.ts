@@ -68,4 +68,7 @@ export const reIssueAccessToken = async ({
 export const updateSession = async (
   query: FilterQuery<SessionDocument>,
   update: UpdateQuery<SessionDocument>
-): Promise<any> => Session.updateOne(query, update);
+) => Session.updateOne(query, update);
+
+export const findSessions = async (query: FilterQuery<SessionDocument>) =>
+  Session.find(query).lean();
