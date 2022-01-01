@@ -1,8 +1,7 @@
 export default {
   port: 1337,
   host: 'localhost',
-  dbUri:
-    'mongodb+srv://username:samsunga316@cluster0.xduas.mongodb.net/myFirstDatabase?retryWrites=true&w=majority',
+  dbUri: 'REST-API',
   saltWorkFactor: 10,
   accessTokenTtl: '15m',
   refreshTokenTtl: '1y',
